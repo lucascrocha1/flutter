@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'base/api-service.dart';
 
 void main() => runApp(MyApp());
 
@@ -46,7 +47,13 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  void _incrementCounter() {
+  void _incrementCounter() async {
+    await ApiService().get('/api/person/get', { 'id': 1 });
+    await ApiService().get('api/person/list', { 'search': null, 'pageSize': 5000, 'pageIndex': 1 });
+    await ApiService().post('/api/person/insert', { 'name': 'Lucas', 'birthDate': '12/06/1998', 'email': 'lucascrocha@outlook.com'});
+    await ApiService().put('/api/person/edit',  { 'id': '1', 'name': 'Lucas Rocha', 'birthDate': '12/06/1998', 'email': 'lucascrocha@outlook.com'});
+    await ApiService().delete('/api/person/delete',  { 'id': '1' });
+
     setState(() {
       // This call to setState tells the Flutter framework that something has
       // changed in this State, which causes it to rerun the build method below
