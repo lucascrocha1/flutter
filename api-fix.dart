@@ -8,8 +8,13 @@ class ApiFix {
 
   changeApiUrl() async {
     print('Getting url...');
-    var url = await _getUrlNgrok();
-    print('Done, the url is running at: ' + url);
+    var url = await _getUrlNgrok() as String;
+    print('Done, the ngrok is running at: ' + url);
+
+    if (url.isEmpty) {
+      print('Oops. Something went wrong. Please try again.');
+      return;
+    }
 
     print('Changing api-service url...');
     await _changeUrlFile(url);
@@ -41,6 +46,8 @@ class ApiFix {
     var response = await _getResponse();
 
     for (var item in response.keys) {
+      if (response[item] is String || response[item].isEmpty) return null;
+
       for (var subItem in response[item]) {
         var url = subItem['public_url'];
 
@@ -53,18 +60,26 @@ class ApiFix {
   }
 
   String _getApiUrl() {
-    return Uri.decodeFull(Uri.http('localhost:4040', '/api/tunnels').toString());
+    return Uri.decodeFull(
+        Uri.http('localhost:4040', '/api/tunnels').toString());
   }
 
   start() async {
     print('Starting ngrok...');
 
-    await Process
-      .start('ngrok http -host-header=localhost https://localhost:44349', [''], runInShell: true)
-      .then((result) { changeApiUrl(); }); 
+    await Process.start(
+            'ngrok http -host-header=localhost https://localhost:44349', [''],
+            runInShell: true)
+        .then((result) {
+      changeApiUrl();
+    });
   }
 }
 
 main() {
-  ApiFix().start();
+  try {
+    ApiFix().start();
+  } catch (e) {
+    print('Oops. Something went wrong. Please try again.');
+  }
 }

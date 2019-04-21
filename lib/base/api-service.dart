@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiService {
-  final String api = '9119bbfb.ngrok.io';
+  final String api = 'a6f27b65.ngrok.io';
   final client = http.Client();
 
   get(String url, Map query) async {
@@ -10,19 +10,19 @@ class ApiService {
 
     var response = await client.get(_getApiUrl(url), headers: _getHeaders()); 
 
-    return response.body;
+    return json.decode(response.body);
   }
 
   post(String url, Map body) async {
     var response = await client.post(_getApiUrl(url), body: jsonEncode(body), headers: _getHeaders());
     
-    return response.body;
+    return json.decode(response.body);
   }
 
   put(String url, Map body) async {
     var response = await client.put(_getApiUrl(url), body: jsonEncode(body), headers: _getHeaders());
 
-    return response.body;
+    return json.decode(response.body);
   }
 
   delete(String url, Map body) async {
@@ -30,7 +30,7 @@ class ApiService {
 
     var response = await client.delete(_getApiUrl(url), headers: _getHeaders());
 
-    return response.body;
+    return json.decode(response.body);
   }
 
   _getHeaders() {
