@@ -44,6 +44,15 @@ class _UserInsertEdit extends State<UserInsertEdit> {
     getUser();
   }
 
+  submit() async {
+    if (this.userId == null)
+      await UserService().insert('api/person/insert', this.user.toMap());
+    else
+      await UserService().edit('api/person/edit', this.user.toMap());
+
+    Navigator.pop(context, [true]);
+  }
+
   @override
   Widget build(BuildContext context) {
     var appBarText = this.userId == null ? 'Insert User' : 'Edit User';
@@ -51,6 +60,14 @@ class _UserInsertEdit extends State<UserInsertEdit> {
     return Scaffold(
       appBar: AppBar(
         title: Text(appBarText),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Confirm'),
+            textColor: Colors.white,
+            onPressed: () { submit(); },
+            shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
+          ),
+        ],
       ),
       body: Form(
         autovalidate: true,

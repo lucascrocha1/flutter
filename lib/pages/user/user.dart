@@ -11,4 +11,11 @@ class User {
     name = json['name'],
     email = json['email'],
     birthDate = json['birthDate'];
+
+  Map<String, dynamic> toMap() => {
+    'id': id,
+    'name': name,
+    'email': email,
+    'birthDate': birthDate
+  };
 }

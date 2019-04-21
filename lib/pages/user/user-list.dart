@@ -14,7 +14,7 @@ class _UserListState extends State<UserList> {
   getUsers() async {
     var response = await UserService()
       .get('/api/person/list', { 'search': null, 'pageSize': 500, 'pageIndex': 1 });
-print(response);
+
     setState(() {
       users = response.map((model) => User.fromJson(model)).toList();
     });
@@ -30,7 +30,7 @@ print(response);
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Users'),
+        title: Text('Users')
       ),
       body: ListView.builder(
         itemCount: users.length,
@@ -39,7 +39,11 @@ print(response);
             title: Text(users[index].name),
             subtitle: Text(users[index].email),
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserInsertEdit(userId: users[index].id)));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => UserInsertEdit(userId: users[index].id)))
+                .then((val) { 
+                  if (val != null && val.isNotEmpty)
+                    getUsers();
+                 });
             },
           );
         },
