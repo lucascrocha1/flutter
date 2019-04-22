@@ -48,6 +48,17 @@ class _UserListState extends State<UserList> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => UserInsertEdit(userId: null)))
+                  .then((val) { 
+                  if (val != null && val.isNotEmpty)
+                    getUsers();
+                 });
+            },
+            child: Icon(Icons.add),
+          ),
     );
   }
 }

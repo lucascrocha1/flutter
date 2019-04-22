@@ -50,7 +50,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
     else
       await UserService().edit('api/person/edit', this.user.toMap());
 
-    Navigator.pop(context, [true]);
+    Navigator.pop(context, ['true']);
   }
 
   @override
@@ -60,6 +60,10 @@ class _UserInsertEdit extends State<UserInsertEdit> {
     return Scaffold(
       appBar: AppBar(
         title: Text(appBarText),
+        leading: new IconButton(icon: new Icon(Icons.arrow_back), 
+            onPressed: () async {
+            Navigator.pop(context, ['true']);
+          }),
         actions: <Widget>[
           FlatButton(
             child: Text('Confirm'),
