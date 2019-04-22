@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'user-service.dart';
 import 'user.dart';
+import '../loader/loader.dart';
 
 class UserInsertEdit extends StatefulWidget {
   final int userId;
@@ -20,7 +21,15 @@ class _UserInsertEdit extends State<UserInsertEdit> {
   var txtEmail = new TextEditingController();
   var txtBirthDate = new TextEditingController();
 
+  var isLoading = true;
+
   _UserInsertEdit({this.userId});
+
+  @override
+  void initState() {
+    super.initState();
+    getUser();
+  }
 
   getUser() async {
     var userFromServer = User();
@@ -36,44 +45,29 @@ class _UserInsertEdit extends State<UserInsertEdit> {
     setState(() {
       user = userFromServer;
     });
+
+    changeLoadingState(false);
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getUser();
+  changeLoadingState(bool value) {
+    isLoading = value;
   }
 
   submit() async {
+    changeLoadingState(true);
+
     if (this.userId == null)
       await UserService().insert('api/person/insert', this.user.toMap());
     else
       await UserService().edit('api/person/edit', this.user.toMap());
 
     Navigator.pop(context, ['true']);
+
+    changeLoadingState(false);
   }
 
-  @override
-  Widget build(BuildContext context) {
-    var appBarText = this.userId == null ? 'Insert User' : 'Edit User';
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(appBarText),
-        leading: IconButton(icon: new Icon(Icons.arrow_back), 
-            onPressed: () async {
-            Navigator.pop(context, ['true']);
-          }),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('Confirm'),
-            textColor: Colors.white,
-            onPressed: () { submit(); },
-            shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
-          ),
-        ],
-      ),
-      body: Form(
+  renderForm() {
+    return Form(
         autovalidate: true,
         child: ListView(
           children: <Widget>[
@@ -106,6 +100,34 @@ class _UserInsertEdit extends State<UserInsertEdit> {
             ),
           ],
         ),
+      );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var appBarText = this.userId == null ? 'Insert User' : 'Edit User';
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(appBarText),
+        leading: IconButton(icon: new Icon(Icons.arrow_back), 
+            onPressed: () async {
+            Navigator.pop(context, ['true']);
+          }),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Confirm'),
+            textColor: Colors.white,
+            onPressed: () { submit(); },
+            shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: <Widget>[     
+          LoaderComponent(),
+          renderForm()
+        ],
       ),
     );
   }
