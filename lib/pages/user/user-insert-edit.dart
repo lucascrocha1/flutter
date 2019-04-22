@@ -60,7 +60,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
     return Scaffold(
       appBar: AppBar(
         title: Text(appBarText),
-        leading: new IconButton(icon: new Icon(Icons.arrow_back), 
+        leading: IconButton(icon: new Icon(Icons.arrow_back), 
             onPressed: () async {
             Navigator.pop(context, ['true']);
           }),

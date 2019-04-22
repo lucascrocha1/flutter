@@ -11,6 +11,12 @@ class UserList extends StatefulWidget {
 class _UserListState extends State<UserList> {
   var users = List<dynamic>();
 
+  @override
+  void initState() {
+    super.initState();
+    getUsers();
+  }
+
   getUsers() async {
     var response = await UserService()
       .get('/api/person/list', { 'search': null, 'pageSize': 500, 'pageIndex': 1 });
@@ -20,10 +26,37 @@ class _UserListState extends State<UserList> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getUsers();
+  deleteUser(int userId) async {
+    executeDelete() async {
+      await UserService().delete('api/person/delete', { 'id': userId });
+      await getUsers();
+      Navigator.of(context).pop();
+    }
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Delete user'),
+          content: Text('This action cannot be undone'),
+          actions: <Widget>[
+            new FlatButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            new FlatButton(
+              child: Text('Delete'),
+              textColor: Colors.red,
+              onPressed: () async {
+                await executeDelete();
+              },
+            )
+          ],
+        );
+      }
+    );    
   }
 
   @override
@@ -38,6 +71,12 @@ class _UserListState extends State<UserList> {
           return ListTile(
             title: Text(users[index].name),
             subtitle: Text(users[index].email),
+            trailing: IconButton(
+              icon: new Icon(Icons.delete), 
+              color: Colors.red,
+              onPressed: () async {
+                await deleteUser(users[index].id);
+            }),
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) => UserInsertEdit(userId: users[index].id)))
                 .then((val) { 
