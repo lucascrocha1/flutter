@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'user-service.dart';
 import 'user.dart';
 import '../loader/loader.dart';
+import 'package:flutter/scheduler.dart';
 
 class UserInsertEdit extends StatefulWidget {
   final int userId;
@@ -21,17 +22,20 @@ class _UserInsertEdit extends State<UserInsertEdit> {
   var txtEmail = new TextEditingController();
   var txtBirthDate = new TextEditingController();
 
-  var isLoading = true;
+  LoaderComponent loaderComponent;
 
   _UserInsertEdit({this.userId});
 
   @override
   void initState() {
+    loaderComponent = LoaderComponent(context: this.context);
     super.initState();
-    getUser();
+    SchedulerBinding.instance.addPostFrameCallback((_) => getUser());
   }
 
   getUser() async {
+    loaderComponent.state.show();
+
     var userFromServer = User();
 
     if (userId != null) {
@@ -46,15 +50,11 @@ class _UserInsertEdit extends State<UserInsertEdit> {
       user = userFromServer;
     });
 
-    changeLoadingState(false);
-  }
-
-  changeLoadingState(bool value) {
-    isLoading = value;
+    loaderComponent.state.dimiss();
   }
 
   submit() async {
-    changeLoadingState(true);
+    loaderComponent.state.show();
 
     if (this.userId == null)
       await UserService().insert('api/person/insert', this.user.toMap());
@@ -63,7 +63,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
 
     Navigator.pop(context, ['true']);
 
-    changeLoadingState(false);
+    loaderComponent.state.dimiss();
   }
 
   renderForm() {
@@ -125,7 +125,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
       ),
       body: Stack(
         children: <Widget>[     
-          LoaderComponent(),
+          loaderComponent,
           renderForm()
         ],
       ),

@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class ApiService {
-  final String api = 'ea92da9c.ngrok.io';
+  final String api = '15022aea.ngrok.io';
   final client = http.Client();
 
   get(String url, Map query) async {
