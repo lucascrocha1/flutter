@@ -22,13 +22,15 @@ class _UserInsertEdit extends State<UserInsertEdit> {
   var txtEmail = new TextEditingController();
   var txtBirthDate = new TextEditingController();
 
+  var formKey = new GlobalKey<FormState>();
+
   LoaderComponent loaderComponent;
 
   _UserInsertEdit({this.userId});
 
   @override
   void initState() {
-    loaderComponent = LoaderComponent(context: this.context);
+    loaderComponent = LoaderComponent(key: formKey);
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) => getUser());
   }
@@ -68,6 +70,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
 
   renderForm() {
     return Form(
+        key: formKey,
         autovalidate: true,
         child: ListView(
           children: <Widget>[
