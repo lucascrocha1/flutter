@@ -60,16 +60,13 @@ class ApiFix {
   }
 
   String _getApiUrl() {
-    return Uri.decodeFull(
-        Uri.http('localhost:4040', '/api/tunnels').toString());
+    return Uri.decodeFull(Uri.http('localhost:4040', '/api/tunnels').toString());
   }
 
   start() async {
     print('Starting ngrok...');
 
-    await Process.start(
-            'ngrok http -host-header=localhost https://localhost:44349', [''],
-            runInShell: true)
+    await Process.start('ngrok http -host-header=localhost https://localhost:44349', [''], runInShell: true)
         .then((result) {
       changeApiUrl();
     });
