@@ -30,7 +30,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
 
   @override
   void initState() {
-    loaderComponent = LoaderComponent(key: formKey);
+    loaderComponent = LoaderComponent(formKey: formKey);
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) => getUser());
   }

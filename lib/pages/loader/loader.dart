@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
 class LoaderComponent extends StatefulWidget {
-  final GlobalKey key;
+  final GlobalKey formKey;
   _LoaderComponent state;
 
-  LoaderComponent({ this.key });
+  LoaderComponent({ this.formKey });
 
   @override
   _LoaderComponent createState() {
-    state = _LoaderComponent(key: this.key);
+    state = _LoaderComponent(formKey: this.formKey);
 
     return state;
   }
 }
 
 class _LoaderComponent extends State<LoaderComponent> {
-  final GlobalKey key;
+  final GlobalKey formKey;
 
-  _LoaderComponent({ this.key });
+  _LoaderComponent({ this.formKey });
 
   var isLoading = false;
 
   show() {
-    print(key);
+    print(formKey);
 
     FocusScope.of(context).requestFocus(new FocusNode());
     changeLoadingState(true);
