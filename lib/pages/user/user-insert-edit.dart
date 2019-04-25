@@ -29,7 +29,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
 
   @override
   void initState() {
-    loaderComponent = LoaderComponent(formKey: formKey);
+    loaderComponent = LoaderComponent(handleChange: handleChange);
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((_) => getUser());
   }
@@ -73,6 +73,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
           children: <Widget>[
             new TextField(
               controller: handleChange.add('name'),
+              enabled: handleChange.addDisabled('name'),
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                   hintText: 'Type your full name',
@@ -82,6 +83,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
             ),
             new TextField(
               controller: handleChange.add('email'),
+              enabled: handleChange.addDisabled('email'),
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                   hintText: 'Enter a valid email',
@@ -91,6 +93,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
             ),
             new TextField(
               controller: handleChange.add('birthDate'),
+              enabled: handleChange.addDisabled('birthDate'),
               keyboardType: TextInputType.datetime,
               decoration: InputDecoration(
                   hintText: 'Enter your birth date',

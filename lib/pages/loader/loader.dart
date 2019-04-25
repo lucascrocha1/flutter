@@ -1,34 +1,35 @@
 import 'package:flutter/material.dart';
+import '../../base/handle-change.dart';
 
 class LoaderComponent extends StatefulWidget {
-  final GlobalKey formKey;
+  final HandleChange handleChange;
   _LoaderComponent state;
 
-  LoaderComponent({ this.formKey });
+  LoaderComponent({ this.handleChange });
 
   @override
   _LoaderComponent createState() {
-    state = _LoaderComponent(formKey: this.formKey);
+    state = _LoaderComponent(handleChange: this.handleChange);
 
     return state;
   }
 }
 
 class _LoaderComponent extends State<LoaderComponent> {
-  final GlobalKey formKey;
+  final HandleChange handleChange;
 
-  _LoaderComponent({ this.formKey });
+  _LoaderComponent({ this.handleChange });
 
   var isLoading = false;
 
   show() {
-    print(formKey);
-
+    handleChange.disableAll(false);
     FocusScope.of(context).requestFocus(new FocusNode());
     changeLoadingState(true);
   }
 
   dimiss() {
+    handleChange.disableAll(true);
     FocusScope.of(context).requestFocus(new FocusNode());
     changeLoadingState(false);
   }
