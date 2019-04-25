@@ -3,6 +3,7 @@ import 'user-service.dart';
 import 'user.dart';
 import '../loader/loader.dart';
 import 'package:flutter/scheduler.dart';
+import '../../base/handle-change.dart';
 
 class UserInsertEdit extends StatefulWidget {
   final int userId;
@@ -17,10 +18,8 @@ class _UserInsertEdit extends State<UserInsertEdit> {
   final int userId;
 
   var user = User();
-  // ToDo: do a better code to make generic to control all the input fields
-  var txtName = new TextEditingController();
-  var txtEmail = new TextEditingController();
-  var txtBirthDate = new TextEditingController();
+
+  var handleChange = HandleChange();
 
   var formKey = new GlobalKey<FormState>();
 
@@ -43,9 +42,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
     if (userId != null) {
       var response = await UserService().get('/api/person/get', {'id': this.userId});
       userFromServer = User.fromJson(response);
-      txtName.text = userFromServer.name;
-      txtEmail.text = userFromServer.email;
-      txtBirthDate.text = userFromServer.birthDate;
+      handleChange.setValue(userFromServer.toMap());
     }
 
     setState(() {
@@ -75,7 +72,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
         child: ListView(
           children: <Widget>[
             new TextField(
-              controller: txtName,
+              controller: handleChange.add('name'),
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                   hintText: 'Type your full name',
@@ -84,7 +81,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
               onChanged: (e) => user.name = e,
             ),
             new TextField(
-              controller: txtEmail,
+              controller: handleChange.add('email'),
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                   hintText: 'Enter a valid email',
@@ -93,7 +90,7 @@ class _UserInsertEdit extends State<UserInsertEdit> {
               onChanged: (e) => user.email = e,
             ),
             new TextField(
-              controller: txtBirthDate,
+              controller: handleChange.add('birthDate'),
               keyboardType: TextInputType.datetime,
               decoration: InputDecoration(
                   hintText: 'Enter your birth date',
