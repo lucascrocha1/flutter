@@ -1,36 +1,48 @@
 import 'package:flutter/material.dart';
-import '../../base/handle-change.dart';
+import '../../base/text-field-handler.dart';
 
 class LoaderComponent extends StatefulWidget {
-  final HandleChange handleChange;
-  _LoaderComponent state;
+  final TextFieldHandler textFieldHandler;
+  _LoaderComponent _state;
 
-  LoaderComponent({ this.handleChange });
+  show() {
+    _state.show();
+  }
+
+  dismiss() {
+    _state.dismiss();
+  }
+
+  LoaderComponent({ this.textFieldHandler });
 
   @override
   _LoaderComponent createState() {
-    state = _LoaderComponent(handleChange: this.handleChange);
+    _state = _LoaderComponent(textFieldHandler: this.textFieldHandler);
 
-    return state;
+    return _state;
   }
 }
 
 class _LoaderComponent extends State<LoaderComponent> {
-  final HandleChange handleChange;
+  final TextFieldHandler textFieldHandler;
 
-  _LoaderComponent({ this.handleChange });
+  _LoaderComponent({ this.textFieldHandler });
 
   var isLoading = false;
 
-  show() {
-    handleChange.disableAll(false);
+  clearFocus() {
     FocusScope.of(context).requestFocus(new FocusNode());
+  }
+
+  show() {
+    textFieldHandler.enableController.disableAll(false);
+    clearFocus();
     changeLoadingState(true);
   }
 
-  dimiss() {
-    handleChange.disableAll(true);
-    FocusScope.of(context).requestFocus(new FocusNode());
+  dismiss() {
+    textFieldHandler.enableController.disableAll(true);
+    clearFocus();
     changeLoadingState(false);
   }
 
@@ -51,7 +63,7 @@ class _LoaderComponent extends State<LoaderComponent> {
           backgroundColor: Colors.white,
           content: Stack(
             children: <Widget>[
-              CircularProgressIndicator()              
+              LinearProgressIndicator()    
             ],
           )
         )

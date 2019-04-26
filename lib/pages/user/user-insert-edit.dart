@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'user-service.dart';
 import 'user.dart';
-import '../loader/loader.dart';
+import '../../components/loader/loader.dart';
 import 'package:flutter/scheduler.dart';
-import '../../base/handle-change.dart';
+import '../../base/text-field-handler.dart';
 
 class UserInsertEdit extends StatefulWidget {
   final int userId;
@@ -16,44 +16,46 @@ class UserInsertEdit extends StatefulWidget {
 
 class _UserInsertEdit extends State<UserInsertEdit> {
   final int userId;
+  _UserInsertEdit({this.userId});
 
   var user = User();
-
-  var handleChange = HandleChange();
-
-  var formKey = new GlobalKey<FormState>();
-
+  var textFieldHandler = TextFieldHandler();
   LoaderComponent loaderComponent;
-
-  _UserInsertEdit({this.userId});
 
   @override
   void initState() {
-    loaderComponent = LoaderComponent(handleChange: handleChange);
     super.initState();
-    SchedulerBinding.instance.addPostFrameCallback((_) => getUser());
+    
+    loaderComponent = LoaderComponent(textFieldHandler: textFieldHandler);
+
+    SchedulerBinding
+      .instance
+      .addPostFrameCallback((_) => getUser());
+  }
+
+  loadUser() async {
+    var response = await UserService().get('/api/person/get', {'id': this.userId});
+
+    return User.fromJson(response);
   }
 
   getUser() async {
-    loaderComponent.state.show();
-
-    var userFromServer = User();
+    loaderComponent.show();
 
     if (userId != null) {
-      var response = await UserService().get('/api/person/get', {'id': this.userId});
-      userFromServer = User.fromJson(response);
-      handleChange.setValue(userFromServer.toMap());
-    }
+      var userFromServer = await loadUser();
+      textFieldHandler.textController.changeValue(userFromServer.toMap());
 
-    setState(() {
-      user = userFromServer;
-    });
+      setState(() {
+        user = userFromServer;
+      });
+    }    
 
-    loaderComponent.state.dimiss();
+    loaderComponent.dismiss();
   }
 
   submit() async {
-    loaderComponent.state.show();
+    loaderComponent.show();
 
     if (this.userId == null)
       await UserService().insert('api/person/insert', this.user.toMap());
@@ -62,18 +64,17 @@ class _UserInsertEdit extends State<UserInsertEdit> {
 
     Navigator.pop(context, ['true']);
 
-    loaderComponent.state.dimiss();
+    loaderComponent.dismiss();
   }
 
   renderForm() {
     return Form(
-        key: formKey,
         autovalidate: true,
         child: ListView(
           children: <Widget>[
             new TextField(
-              controller: handleChange.add('name'),
-              enabled: handleChange.addDisabled('name'),
+              controller: textFieldHandler.textController.push('name'),
+              enabled: textFieldHandler.enableController.push('name'),
               keyboardType: TextInputType.text,
               decoration: InputDecoration(
                   hintText: 'Type your full name',
@@ -82,8 +83,8 @@ class _UserInsertEdit extends State<UserInsertEdit> {
               onChanged: (e) => user.name = e,
             ),
             new TextField(
-              controller: handleChange.add('email'),
-              enabled: handleChange.addDisabled('email'),
+              controller: textFieldHandler.textController.push('email'),
+              enabled: textFieldHandler.enableController.push('email'),
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
                   hintText: 'Enter a valid email',
@@ -92,8 +93,8 @@ class _UserInsertEdit extends State<UserInsertEdit> {
               onChanged: (e) => user.email = e,
             ),
             new TextField(
-              controller: handleChange.add('birthDate'),
-              enabled: handleChange.addDisabled('birthDate'),
+              controller: textFieldHandler.textController.push('birthDate'),
+              enabled: textFieldHandler.enableController.push('birthDate'),
               keyboardType: TextInputType.datetime,
               decoration: InputDecoration(
                   hintText: 'Enter your birth date',

@@ -22,8 +22,7 @@ class _UserListState extends State<UserList> {
   getUsers() async {
     changeLoadingState(true);
 
-    var response = await UserService()
-      .get('/api/person/list', { 'search': null, 'pageSize': 500, 'pageIndex': 1 });
+    var response = await UserService().get('/api/person/list', { 'search': null, 'pageSize': 500, 'pageIndex': 1 });
 
     setState(() {
       users = response.map((model) => User.fromJson(model)).toList();
@@ -37,65 +36,67 @@ class _UserListState extends State<UserList> {
     setState(() {
       isLoading = value;
     });
-  }
+  }  
 
   deleteUser(int userId) async {
-    executeDelete() async {
-      Navigator.of(context).pop();
-      changeLoadingState(true);
-      await UserService().delete('api/person/delete', { 'id': userId });
-      await getUsers();
-    }
+    changeLoadingState(true);
+    await UserService().delete('api/person/delete', {'id': userId});
+    await getUsers();
+  }
 
+  pushPage(int userId) async {
+    await Navigator.push(context, MaterialPageRoute(builder: (context) => UserInsertEdit(userId: userId)))
+      .then((val) {
+        if (val != null && val.isNotEmpty) 
+          getUsers();
+    });
+  }
+
+  showDeleteAlert(int userId) async {
     await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Delete user'),
-          content: Text('This action cannot be undone'),
-          actions: <Widget>[
-            new FlatButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            new FlatButton(
-              child: Text('Delete'),
-              textColor: Colors.red,
-              onPressed: () async {
-                await executeDelete();
-              },
-            )
-          ],
-        );
-      }
-    );    
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Delete user'),
+            content: Text('This action cannot be undone.'),
+            actions: <Widget>[
+              new FlatButton(
+                child: Text('Close'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              new FlatButton(
+                child: Text('Delete'),
+                textColor: Colors.red,
+                onPressed: () async {
+                  await deleteUser(userId);
+                },
+              )
+            ],
+          );
+      });
   }
 
   renderList() {
     return ListView.builder(
-        itemCount: users.length,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            title: Text(users[index].name),
-            subtitle: Text(users[index].email),
-            trailing: IconButton(
-              icon: new Icon(Icons.delete), 
+      itemCount: users.length,
+      itemBuilder: (BuildContext context, int index) {
+        return ListTile(
+          title: Text(users[index].name),
+          subtitle: Text(users[index].email),
+          trailing: IconButton(
+              icon: new Icon(Icons.delete),
               color: Colors.red,
               onPressed: () async {
-                await deleteUser(users[index].id);
-            }),
-            onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => UserInsertEdit(userId: users[index].id)))
-                .then((val) { 
-                  if (val != null && val.isNotEmpty)
-                    getUsers();
-                 });
-            },
-          );
-        },
-      );
+                await showDeleteAlert(users[index].id);
+              }),
+          onTap: () {
+            pushPage(users[index].id);
+          },
+        );
+      },
+    );
   }
 
   renderLoader() {
@@ -105,29 +106,22 @@ class _UserListState extends State<UserList> {
   renderNoResults() {
     return Center(child: Text('No results'));
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Users')
-      ),
-      body: isLoading 
-        ? renderLoader() 
-        : emptyUsers
-        ? renderNoResults()
-        : renderList(),
+      appBar: AppBar(title: Text('Users')),
+      body: isLoading
+          ? renderLoader() 
+          : emptyUsers 
+          ? renderNoResults() 
+          : renderList(),
       floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => UserInsertEdit(userId: null)))
-                  .then((val) { 
-                  if (val != null && val.isNotEmpty)
-                    getUsers();
-                 });
-            },
-            child: Icon(Icons.add),
-          ),
+        onPressed: () {
+          pushPage(null);
+        },
+        child: Icon(Icons.add),
+      ),
     );
   }
 }
