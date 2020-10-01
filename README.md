@@ -1,6 +1,6 @@
 # A simple flutter project
 
-A simple flutter project
+A awesome flutter project
 
 ## Setup
 
