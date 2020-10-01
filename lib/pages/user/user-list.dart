@@ -67,8 +67,9 @@ class _UserListState extends State<UserList> {
                 },
               ),
               new FlatButton(
-                child: Text('Delete'),
-                textColor: Colors.red,
+                child: Text('Delete',
+    style: TextStyle(wordSpacing: 2.0,fontStyle: FontStyle.italic,fontWeight: FontWeight.bold),),
+                textColor: Colors.blue,
                 onPressed: () async {
                   await deleteUser(userId);
                 },
@@ -104,7 +105,7 @@ class _UserListState extends State<UserList> {
   }
 
   renderNoResults() {
-    return Center(child: Text('No results'));
+    return Center(child: Text('No result'));
   }
   
   @override
